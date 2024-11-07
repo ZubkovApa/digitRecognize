@@ -1,12 +1,7 @@
-import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
-import numpy as np
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 from tensorflow.keras.datasets import mnist
 from tensorflow import keras
 import tensorflow as tf
-from tensorflow.keras.layers import Dense, Flatten
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
@@ -31,18 +26,24 @@ model = tf.keras.models.Sequential([
 ])
 
 model.compile(optimizer='adam',
-             loss='categorical_crossentropy',
-             metrics=['accuracy'])
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
 
+history = model.fit(x_train, y_train_cat, batch_size=32, epochs=11, validation_split=0.2)
 
-model.fit(x_train, y_train_cat, batch_size=32, epochs=5, validation_split=0.2)
+# Вывод статистики по обучению
+plt.plot(history.history['accuracy'], label='Training accuracy')
+plt.plot(history.history['val_accuracy'], label='Validation accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
 
-model.evaluate(x_test, y_test_cat)
+plt.plot(history.history['loss'], label='Training loss')
+plt.plot(history.history['val_loss'], label='Validation loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend()
+plt.show()
 
-# Распознавание всей тестовой выборки
-pred = model.predict(x_test)
-pred = np.argmax(pred, axis=1)
-
-print(pred.shape)
-
-#model.save('myModel.keras')
+model.save('myModel.keras')
